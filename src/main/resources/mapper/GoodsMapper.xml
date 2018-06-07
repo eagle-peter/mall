@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pp.shopping.module.sys.dao.GoodsMapper" >
+    <resultMap id="BaseResultMap" type="com.pp.shopping.module.sys.model.Goods" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="category_id" property="categoryId" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="is_sale" property="isSale" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="DATE" />
+        <result column="creator" property="creator" jdbcType="INTEGER" />
+        <result column="update_time" property="updateTime" jdbcType="DATE" />
+        <result column="updator" property="updator" jdbcType="INTEGER" />
+        <result column="brand_id" property="brandId" jdbcType="INTEGER" />
+        <result column="is_new_style" property="isNewStyle" jdbcType="INTEGER" />
+        <result column="is_hot_style" property="isHotStyle" jdbcType="INTEGER" />
+        <result column="original_price" property="originalPrice" jdbcType="DOUBLE" />
+        <result column="original_price" property="originalPrice" jdbcType="DOUBLE" />
+        <result column="is_promoted" property="isPromoted" jdbcType="INTEGER" />
+        <result column="count_sold" property="countSold" jdbcType="INTEGER" />
+        <result column="cover_img_id" property="coverImgId" jdbcType="INTEGER" />
+        <result column="min_price" property="minPrice" jdbcType="DOUBLE" />
+        <result column="cover_img_url" property="coverImgUrl" jdbcType="VARCHAR" />
+        <result column="reward_type" property="rewardType" jdbcType="INTEGER" />
+        <result column="reward" property="reward" jdbcType="INTEGER" />
+        <result column="number_good_reputation" property="numberGoodReputation" jdbcType="INTEGER" />
+        <result column="video_id" property="videoId" jdbcType="INTEGER" />
+        <result column="characteristic" property="characteristic" jdbcType="VARCHAR" />
+        <result column="video_url" property="videoUrl" jdbcType="VARCHAR" />
+        <result column="banner_urls" property="bannerUrls" jdbcType="VARCHAR" />
+        <result column="description_urls" property="descriptionUrls" jdbcType="VARCHAR" />
+        <result column="color_codes" property="colorCodes" jdbcType="VARCHAR" />
+        <result column="color_names" property="colorNames" jdbcType="VARCHAR" />
+        <result column="size_codes" property="sizeCodes" jdbcType="VARCHAR" />
+        <result column="size_names" property="sizeNames" jdbcType="VARCHAR" />
+        <result column="stock" property="stock" jdbcType="INTEGER" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id,category_id,name,is_sale,create_time,creator,update_time,updator,brand_id,is_new_style,is_hot_style,
+        original_price,is_promoted,count_sold,cover_img_id,reward_type,reward,number_good_reputation,video_id,characteristic
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="int" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_goods
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <!-- 根据商品分类和商品模糊名称  查询商品list-->
+    <select id="selectListByCategoryIdAndNameLike" resultMap="BaseResultMap">
+        SELECT
+            gv.*
+        FROM
+            t_goods_view gv
+        <where>
+            <if test="null!=categoryId and 0!=categoryId">
+                AND gv.category_id = #{categoryId}
+            </if>
+            <if test="null!=nameLike and ''!=nameLike">
+                AND gv. name LIKE CONCAT('%',#{nameLike},'%')
+            </if>
+        </where>
+    </select>
+    <!-- 查询商品详情-->
+    <select id="selectDetailsByGoodsId" resultMap="BaseResultMap" parameterType="Integer">
+        SELECT
+            gv.*,
+            v.url AS video_url,
+            GROUP_CONCAT(IF(i.type = 2, i.url, NULL)) AS banner_urls,
+            GROUP_CONCAT(IF(i.type = 3, i.url, NULL)) AS description_urls
+        FROM
+            (
+                SELECT
+                    *
+                FROM
+                    t_goods_view
+                WHERE
+                    id = #{id,jdbcType=INTEGER}
+            ) gv
+        LEFT JOIN t_imgs i ON gv.id = i.business_id
+        LEFT JOIN t_video v ON gv.video_id = v.id
+        WHERE
+            i.type BETWEEN 2 AND 3
+        GROUP BY
+            gv.id
+    </select>
+
+    <insert id="insert" parameterType="com.pp.shopping.module.sys.model.Goods" >
+        <selectKey resultType="int" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_goods (
+        category_id,name,is_sale,create_time,creator,update_time,updator,brand_id,is_new_style,is_hot_style,original_price,is_promoted,count_sold,cover_img_id,
+        reward_type,reward,number_good_reputation,video_id,characteristic
+        )
+        values (#{categoryId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR},#{isSale,jdbcType=INTEGER},#{createTime,jdbcType=DATE},#{creator,jdbcType=INTEGER}
+        ,#{updateTime,jdbcType=DATE},#{updator,jdbcType=INTEGER},#{brandId,jdbcType=INTEGER},#{isNewStyle,jdbcType=INTEGER},#{isHotStyle,jdbcType=INTEGER}
+        ,#{originalPrice,jdbcType=DOUBLE},#{isPromoted,jdbcType=INTEGER},#{countSold,jdbcType=INTEGER},#{coverImgId,jdbcType=INTEGER}
+        ,#{rewardType,jdbcType=INTEGER},#{reward,jdbcType=INTEGER},#{numberGoodReputation,jdbcType=INTEGER},#{videoId,jdbcType=INTEGER},#{characteristic,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.pp.shopping.module.sys.model.Goods" >
+        update t_goods
+        <set >
+            <if test="categoryId != null" >
+                category_id = #{categoryId,jdbcType=INTEGER},
+            </if>
+            <if test="name != null" >
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="isSale != null" >
+                is_sale = #{isSale,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=DATE},
+            </if>
+            <if test="creator != null" >
+                creator = #{creator,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=DATE},
+            </if>
+            <if test="updator != null" >
+                updator = #{updator,jdbcType=INTEGER},
+            </if>
+            <if test="brandId != null" >
+                brandId = #{brandId,jdbcType=INTEGER},
+            </if>
+            <if test="isNewStyle != null" >
+                is_new_style = #{isNewStyle,jdbcType=INTEGER},
+            </if>
+            <if test="isHotStyle != null" >
+                is_hot_style = #{isHotStyle,jdbcType=INTEGER},
+            </if>
+            <if test="originalPrice != null" >
+                original_price = #{originalPrice,jdbcType=DOUBLE},
+            </if>
+            <if test="isPromoted != null" >
+                isPromoted = #{isPromoted,jdbcType=INTEGER},
+            </if>
+            <if test="countSold != null" >
+                count_sold = #{countSold,jdbcType=INTEGER},
+            </if>
+            <if test="coverImgId != null" >
+                cover_img_id = #{coverImgId,jdbcType=INTEGER},
+            </if>
+            <if test="rewardType != null" >
+                reward_type = #{rewardType,jdbcType=INTEGER},
+            </if>
+            <if test="reward != null" >
+                reward = #{reward,jdbcType=INTEGER},
+            </if>
+            <if test="numberGoodReputation != null" >
+                number_good_reputation = #{numberGoodReputation,jdbcType=INTEGER},
+            </if>
+            <if test="videoId != null" >
+                video_id = #{videoId,jdbcType=INTEGER},
+            </if>
+            <if test="characteristic != null" >
+                characteristic = #{characteristic,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="int" >
+        delete from t_goods
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+</mapper>

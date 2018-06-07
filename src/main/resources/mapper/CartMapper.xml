@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pp.shopping.module.sys.dao.CartMapper" >
+    <resultMap id="BaseResultMap" type="com.pp.shopping.module.sys.model.Cart" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="state" property="state" jdbcType="TINYINT" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, user_id, create_time, state
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="int" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_cart
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <insert id="insert" parameterType="com.pp.shopping.module.sys.model.Cart" >
+        <selectKey resultType="int" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_cart (user_id, create_time, state
+            )
+        values (#{userId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{state,jdbcType=TINYINT}
+            )
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.pp.shopping.module.sys.model.Cart" >
+        update t_cart
+        <set >
+            <if test="userId != null" >
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="state != null" >
+                state = #{state,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="int" >
+        delete from t_cart
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+</mapper>

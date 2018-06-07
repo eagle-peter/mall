@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pp.shopping.module.sys.dao.OrderMapper" >
+    <resultMap id="BaseResultMap" type="com.pp.shopping.module.sys.model.Order" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="order_num" property="orderNum" jdbcType="VARCHAR" />
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="set_state" property="setState" jdbcType="TINYINT" />
+        <result column="pay_state" property="payState" jdbcType="TINYINT" />
+        <result column="receiver" property="receiver" jdbcType="INTEGER" />
+        <result column="settime" property="settime" jdbcType="TIMESTAMP" />
+        <result column="gettime" property="gettime" jdbcType="TIMESTAMP" />
+        <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+        <result column="receive_address" property="receiveAddress" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, order_num, goods_id, user_id, set_state, pay_state, receiver, settime, gettime, 
+        mobile, receive_address, create_time
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="int" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_order
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <insert id="insert" parameterType="com.pp.shopping.module.sys.model.Order" >
+        <selectKey resultType="int" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_order (order_num, goods_id, user_id, 
+            set_state, pay_state, receiver, 
+            settime, gettime, mobile, 
+            receive_address, create_time)
+        values (#{orderNum,jdbcType=VARCHAR}, #{goodsId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+            #{setState,jdbcType=TINYINT}, #{payState,jdbcType=TINYINT}, #{receiver,jdbcType=INTEGER}, 
+            #{settime,jdbcType=TIMESTAMP}, #{gettime,jdbcType=TIMESTAMP}, #{mobile,jdbcType=VARCHAR}, 
+            #{receiveAddress,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.pp.shopping.module.sys.model.Order" >
+        update t_order
+        <set >
+            <if test="orderNum != null" >
+                order_num = #{orderNum,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsId != null" >
+                goods_id = #{goodsId,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null" >
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="setState != null" >
+                set_state = #{setState,jdbcType=TINYINT},
+            </if>
+            <if test="payState != null" >
+                pay_state = #{payState,jdbcType=TINYINT},
+            </if>
+            <if test="receiver != null" >
+                receiver = #{receiver,jdbcType=INTEGER},
+            </if>
+            <if test="settime != null" >
+                settime = #{settime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gettime != null" >
+                gettime = #{gettime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="mobile != null" >
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="receiveAddress != null" >
+                receive_address = #{receiveAddress,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="int" >
+        delete from t_order
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+</mapper>

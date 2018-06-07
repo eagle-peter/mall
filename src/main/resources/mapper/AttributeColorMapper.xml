@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pp.shopping.module.sys.dao.AttributeColorMapper" >
+    <resultMap id="BaseResultMap" type="com.pp.shopping.module.sys.model.AttributeColor" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="color_code" property="colorCode" jdbcType="VARCHAR" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+        <result column="create_time" property="createTime" jdbcType="DATE" />
+        <result column="update_time" property="updateTime" jdbcType="DATE" />
+        <result column="creator" property="creator" jdbcType="INTEGER" />
+        <result column="updator" property="updator" jdbcType="INTEGER" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, color_code, goods_id,create_time,update_time,creator,updator
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="int" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_attribute_color
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <!-- 查询商品拥有的颜色-->
+    <select id="selectColorsByGoodsId" resultMap="BaseResultMap" parameterType="Integer">
+        SELECT
+            ac.color_code,
+            d.name
+        FROM
+            t_attribute_color ac
+        LEFT JOIN t_dictionary d ON ac.color_code=d.`code` AND d.type = 2 AND d.`status` = 1
+        WHERE
+            ac.goods_id = #{goodsId,jdbcType=INTEGER}
+    </select>
+
+    <insert id="insert" parameterType="com.pp.shopping.module.sys.model.AttributeColor" >
+        <selectKey resultType="int" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_attribute_color (color_code, goods_id,create_time,update_time,creator,updator)
+        values (#{colorCode,jdbcType=VARCHAR}, #{goodsId,jdbcType=INTEGER},#{createTime,jdbcType=DATE},#{updateTime,jdbcType=DATE}
+        ,#{creator,jdbcType=INTEGER},#{updator,jdbcType=INTEGER})
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.pp.shopping.module.sys.model.AttributeColor" >
+        update t_attribute_color
+        <set >
+            <if test="colorCode != null" >
+                color_code = #{colorCode,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsId != null" >
+                goods_id = #{goodsId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=DATE},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=DATE},
+            </if>
+            <if test="creator != null" >
+                creator = #{creator,jdbcType=INTEGER},
+            </if>
+            <if test="updator != null" >
+                updator = #{updator,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="int" >
+        delete from t_attribute_color
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+</mapper>

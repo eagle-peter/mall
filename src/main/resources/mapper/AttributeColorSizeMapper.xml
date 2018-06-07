@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pp.shopping.module.sys.dao.AttributeColorSizeMapper" >
+    <resultMap id="BaseResultMap" type="com.pp.shopping.module.sys.model.AttributeColorSize" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="attribute_color_id" property="attributeColorId" jdbcType="INTEGER" />
+        <result column="attribute_size_id" property="attributeSizeId" jdbcType="INTEGER" />
+        <result column="stock" property="stock" jdbcType="INTEGER" />
+        <result column="price" property="price" jdbcType="DOUBLE" />
+        <result column="purchase_price" property="purchasePrice" jdbcType="DOUBLE" />
+        <result column="create_time" property="createTime" jdbcType="DATE" />
+        <result column="update_time" property="updateTime" jdbcType="DATE" />
+        <result column="creator" property="creator" jdbcType="INTEGER" />
+        <result column="updator" property="updator" jdbcType="INTEGER" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, attribute_color_id, attribute_size_id,stock,price,purchase_price,create_time,update_time,creator,updator
+    </sql>
+
+    <!--根据商品id颜色code尺寸code查询商品的价格库存等信息-->
+    <select id="selectByGoodsIdColorCodeSizeCode" resultMap="BaseResultMap" >
+        SELECT
+        acs.*
+        FROM
+        t_attribute_color_size acs
+        INNER JOIN (SELECT * FROM t_attribute_color WHERE goods_id=#{goodsId} AND color_code=#{colorCode} )ac ON acs.attribute_color_id=ac.id
+        INNER JOIN (SELECT * FROM t_attribute_size WHERE goods_id=#{goodsId} AND size_code=#{sizeCode} ) tas ON acs.attribute_size_id=tas.id
+    </select>
+
+
+</mapper>
